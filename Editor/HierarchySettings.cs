@@ -27,7 +27,8 @@ namespace Hierarchy2
             public Color selectionColor;
             public Color colorHeaderTitle;
             public Color colorHeaderBackground;
-
+            public Color colorHeaderBackgroundSepInChild;
+ 
             public ThemeData(ThemeData themeData)
             {
                 colorRowEven = themeData.colorRowEven;
@@ -41,6 +42,7 @@ namespace Hierarchy2
                 selectionColor = themeData.selectionColor;
                 colorHeaderTitle = themeData.colorHeaderTitle;
                 colorHeaderBackground = themeData.colorHeaderBackground;
+                colorHeaderBackgroundSepInChild = themeData.colorHeaderBackgroundSepInChild;
             }
 
             public void BlendMultiply(Color blend)
@@ -56,6 +58,7 @@ namespace Hierarchy2
                 selectionColor = selectionColor * blend;
                 colorHeaderTitle = colorHeaderTitle * blend;
                 colorHeaderBackground = colorHeaderBackground * blend;
+                colorHeaderBackgroundSepInChild = colorHeaderBackgroundSepInChild * blend;
             }
         }
 
@@ -156,6 +159,7 @@ namespace Hierarchy2
         public string separatorStartWith = "--->";
         public string separatorDefaultTag = "Untagged";
         public bool useInstantBackground = false;
+        public bool useSeparatorInChildren = false;
 
         public List<InstantBackgroundColor> instantBackgroundColors = new List<InstantBackgroundColor>();
 
@@ -568,6 +572,20 @@ namespace Hierarchy2
                     instantBackgroundIMGUI.StyleMarginLeft(CONTENT_MARGIN_LEFT);
                     verticalLayout.Add(instantBackgroundIMGUI);
 
+                    var useSeparatorInChildrenToggle = new Toggle("Use Separator In Children");
+                    useSeparatorInChildrenToggle.tooltip = "Can Show Separator in children objects too!";
+                    useSeparatorInChildrenToggle.StyleMarginTop(7);
+                    useSeparatorInChildrenToggle.value = settings.useSeparatorInChildren;
+                    useSeparatorInChildrenToggle.RegisterValueChangedCallback(evt =>
+                        {
+                            Undo.RecordObject(settings, "Change Settings");
+
+                            settings.useSeparatorInChildren = evt.newValue;
+                            settings.OnSettingsChanged(nameof(settings.useSeparatorInChildren));
+                        });
+                    useSeparatorInChildrenToggle.StyleMarginLeft(CONTENT_MARGIN_LEFT);
+                    verticalLayout.Add(useSeparatorInChildrenToggle);
+
                     var onlyDisplayWhileMouseHovering = new Toggle("Display Hovering");
                     onlyDisplayWhileMouseHovering.tooltip = "Only display while mouse hovering";
                     onlyDisplayWhileMouseHovering.StyleMarginTop(7);
@@ -758,6 +776,25 @@ namespace Hierarchy2
                             settings.OnSettingsChanged();
                         });
                         verticalLayout.Add(colorHeaderBackground);
+
+
+                        ColorField colorHeaderBackgroundForChild = new ColorField("Separator In Children Background")
+                            {
+                                value = settings.usedTheme.colorHeaderBackgroundSepInChild
+                            };
+                        colorHeaderBackgroundForChild.StyleMarginLeft(CONTENT_MARGIN_LEFT);
+                        colorHeaderBackgroundForChild.RegisterValueChangedCallback(evt =>
+                            {
+                                Undo.RecordObject(settings, "Change Settings");
+
+                                if (EditorGUIUtility.isProSkin)
+                                    settings.professionalTheme.colorHeaderBackgroundSepInChild = evt.newValue;
+                                else
+                                    settings.personalTheme.colorHeaderBackgroundSepInChild = evt.newValue;
+
+                                settings.OnSettingsChanged();
+                            });
+                        verticalLayout.Add(colorHeaderBackgroundForChild);
 
                         ColorField comSelBGColor = new ColorField("Component Selection");
                         comSelBGColor.value = settings.usedTheme.comSelBGColor;
