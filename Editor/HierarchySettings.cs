@@ -778,7 +778,7 @@ namespace Hierarchy2
                         verticalLayout.Add(colorHeaderBackground);
 
 
-                        ColorField colorHeaderBackgroundForChild = new ColorField("Separator In Children Background")
+                        ColorField colorHeaderBackgroundForChild = new ColorField("Children Background")
                             {
                                 value = settings.usedTheme.colorHeaderBackgroundSepInChild
                             };
