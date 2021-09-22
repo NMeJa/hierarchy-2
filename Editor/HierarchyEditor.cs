@@ -20,7 +20,7 @@ namespace Hierarchy2
     public sealed class HierarchyEditor
     {
         internal const int GLOBAL_SPACE_OFFSET_LEFT = 16 * 2;
-
+        internal const int GLOBAL_SPACE_OFFSET_LEFT_FOR_CHILDREN = 16 * 2;
         static HierarchyEditor instance;
 
         public static HierarchyEditor Instance
@@ -571,6 +571,12 @@ namespace Hierarchy2
                     goto FINISH;
                 }
 
+                if (rowItem.isSeparator && settings.useSeparatorInChildren)
+                {
+                    ElementAsSeparator();
+                    goto FINISH;
+                }
+
                 if (settings.useInstantBackground)
                     CustomRowBackground();
 
@@ -715,10 +721,13 @@ namespace Hierarchy2
                 rowItem.gameObject.tag = settings.separatorDefaultTag;
 
             var rect = EditorGUIUtility.PixelsToPoints(RectFromLeft(rowItem.rect, Screen.width, 0));
+            var offsetX = rowItem.isRootObject
+                ? GLOBAL_SPACE_OFFSET_LEFT
+                : GLOBAL_SPACE_OFFSET_LEFT + GLOBAL_SPACE_OFFSET_LEFT_FOR_CHILDREN;
             rect.y = rowItem.rect.y;
             rect.height = rowItem.rect.height;
-            rect.x += GLOBAL_SPACE_OFFSET_LEFT;
-            rect.width -= GLOBAL_SPACE_OFFSET_LEFT;
+            rect.x += offsetX;
+            rect.width -= offsetX;
 
             Color guiColor = GUI.color;
             GUI.color = ThemeData.colorHeaderBackground;
